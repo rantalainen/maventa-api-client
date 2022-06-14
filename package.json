@@ -1,0 +1,36 @@
+{
+  "name": "@rantalainen/maventa-api-client",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "test": "nodemon test.js",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rantalainen/maventa-api-client.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "dist/**/*"
+  ],
+  "bugs": {
+    "url": "https://github.com/rantalainen/maventa-api-client/issues"
+  },
+  "homepage": "https://github.com/rantalainen/maventa-api-client#readme",
+  "dependencies": {
+    "form-data": "^4.0.0",
+    "got": "^11.8.3",
+    "jszip": "^3.10.0",
+    "object-to-formdata": "^4.4.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
