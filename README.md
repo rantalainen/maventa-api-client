@@ -138,6 +138,53 @@ const result = await maventa.validators.validate(fileBuffer, { contentType: 'tex
 console.log(result);
 ```
 
+## Mass printing service (Payslip)
+
+### Setup client with options
+
+In order to obtain an API key, please contact Maventa Integration Support. An API key is needed to access all API functions.
+
+```javascript
+const maventaMassPrinting = new MaventaMassPrintingApiClient({
+  // Required options:
+  maventaClientId: 'company_UUID',
+  maventaClientSecret: 'api_key',
+  maventaVendorApiKey: 'vendor_api_key',
+
+  // Optional options (and default values):
+  apiBaseUrl: 'https://payslip.maventa.com',
+  timeout: 120000
+});
+```
+
+### maventaMassPrinting.send(options: IMaventaMassPrintingSendOptions): Promise\<string\>
+
+Sends a letter to Mass printing service.
+
+Response for sending: https://documentation.maventa.com/integration-guide/#response-for-sending
+
+**required**:
+
+- `options.filename` Name of the ZIP package, should be unique
+- `options.file` ZIP file content
+
+**optional**:
+
+- `options.version` Name of the software (and its version) making the sending. Makes problem solving easier.
+- `options.document_type` Document type: `PDFXML` (default value) or `EPL`
+- `options.letter_class` Letter class to use for sending: `economy` or `priority` (default value)
+- `options.license_key` License key of software making the call (255 chars max)
+- `options.license_meta` Additional information about the licensing system
+- `options.color_print` Color printing `true`, black & white `false` (default value)
+- `options.duplex` Duplex printing for both sides of the letter: `true`. Default is `false`.
+
+```javascript
+// Send letter to Mass printing service
+const fileBuffer = fs.readFileSync('letter_example.zip');
+const result = await maventaMassPrinting.send({ filename: 'letter_example.zip', file: fileBuffer });
+console.log(result);
+```
+
 ## Resources
 
 - Maventa login page: https://secure.maventa.com/
@@ -148,3 +195,4 @@ console.log(result);
 ## Changelog
 
 - 0.0.1 First release
+- 0.1.0 Add support for Maventa Mass printing service (Payslip)
