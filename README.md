@@ -196,3 +196,4 @@ console.log(result);
 
 - 0.0.1 First release
 - 0.1.0 Add support for Maventa Mass printing service (Payslip)
+- 0.1.1 Throw an error if sending a letter fails

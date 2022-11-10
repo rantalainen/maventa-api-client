@@ -195,6 +195,13 @@ export class MaventaMassPrintingApiClient {
       hash
     };
 
-    return await this.request('POST', 'input_public', form);
+    const response: string = await this.request('POST', 'input_public', form);
+
+    // Response should starts with "OK"
+    if (!response.startsWith('OK')) {
+      throw new Error(`Maventa send error: ${response}`);
+    }
+
+    return response;
   }
 }
