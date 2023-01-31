@@ -1,138 +1,271 @@
-import got, { Headers, Method, OptionsOfJSONResponseBody } from 'got';
-import { IMaventaApiClientOptions, IMaventaMassPrintingApiClientOptions, IMaventaMassPrintingSendOptions } from './interfaces';
-import { InvoiceMethods } from './methods/invoice.methods';
-import { ValidatorMethods } from './methods/validator.methods';
+import got, { Got, Method, OptionsOfJSONResponseBody } from 'got';
+import { Api, ApiConfig, RequestParams } from './api';
+import { AxiosRequestConfig } from 'axios';
+import { HttpsAgent } from 'agentkeepalive';
+import {
+  IMaventaApiClientAccessToken,
+  IMaventaApiClientConfig,
+  IMaventaApiClientOptions,
+  IMaventaMassPrintingApiClientOptions,
+  IMaventaMassPrintingSendOptions
+} from './interfaces';
+import { FileBuffer } from './file-buffer';
 import { createHash } from 'crypto';
+import https from 'https';
+import CacheableLookup from 'cacheable-lookup';
+import FormData from 'form-data';
+import JSZip from 'jszip';
+
+// DNS cache to prevent ENOTFOUND and other such issues
+const dnsCache = new CacheableLookup();
+
+// https://learn.microsoft.com/en-us/azure/app-service/app-service-web-nodejs-best-practices-and-troubleshoot-guide#my-node-application-is-making-excessive-outbound-calls
+// https://github.com/MicrosoftDocs/azure-docs/issues/29600#issuecomment-607990556
+const httpsAgent = new HttpsAgent({
+  maxSockets: 32,
+  maxFreeSockets: 10,
+  timeout: 30000,
+  freeSocketTimeout: 4500,
+  socketActiveTTL: 60000
+});
 
 export class MaventaApiClient {
   options: IMaventaApiClientOptions;
+  config: Omit<IMaventaApiClientConfig, 'keepAliveAgent' | 'dnsCache'>;
+  readonly api: MaventaApiClientInstance;
+  private accessTokens: { [scope: string]: IMaventaApiClientAccessToken | undefined } = {};
 
-  /** @private */
-  accessTokens: any;
+  constructor(options: IMaventaApiClientOptions, config: IMaventaApiClientConfig = {}) {
+    // Set default config
+    config.baseURL = config.baseURL || 'https://ax.maventa.com';
+    config.timeout = config.timeout || 120000;
 
-  /** @private */
-  accessTokensTimeout: any;
-
-  readonly invoices: InvoiceMethods;
-  readonly validators: ValidatorMethods;
-
-  constructor(options: IMaventaApiClientOptions) {
-    // Set default options
-    options.apiBaseUrl = options.apiBaseUrl || 'https://ax.maventa.com';
-    options.timeout = options.timeout || 120000;
-
-    if (!options.maventaClientId) {
-      throw new Error('Missing options.maventaClientId');
+    if (!options.clientId) {
+      throw new Error('Maventa error: Missing options.clientId');
     }
-    if (!options.maventaClientSecret) {
-      throw new Error('Missing options.maventaClientSecret');
+    if (!options.clientSecret) {
+      throw new Error('Maventa error: Missing options.clientSecret');
     }
-    if (!options.maventaVendorApiKey) {
-      throw new Error('Missing options.maventaVendorApiKey');
+    if (!options.vendorApiKey) {
+      throw new Error('Maventa error: Missing options.vendorApiKey');
     }
+
+    // If axios config httpsAgent is not set
+    if (!config.httpsAgent) {
+      // Use internal keepAliveAgent by default
+      if (config.keepAliveAgent === true || config.keepAliveAgent === undefined) {
+        config.httpsAgent = httpsAgent;
+      } else {
+        if (config.keepAliveAgent === false) {
+          config.httpsAgent = new https.Agent({ keepAlive: false });
+        } else {
+          config.httpsAgent = config.keepAliveAgent;
+        }
+      }
+    }
+
+    // Use internal dnsCache by default
+    if (config.dnsCache === true || config.dnsCache === undefined) {
+      dnsCache.install(config.httpsAgent);
+    }
+
+    // Delete custom properties before config is assigned
+    delete config.keepAliveAgent;
+    delete config.dnsCache;
 
     this.options = options;
+    this.config = config;
 
-    this.accessTokens = {};
-    this.accessTokensTimeout = {};
+    // Initialize Maventa Api Client Instance
+    this.api = new MaventaApiClientInstance({
+      ...this.config,
+      securityWorker: this.config.securityWorker || this.securityWorker
+    });
+    this.api.setSecurityData(this);
 
-    this.invoices = new InvoiceMethods(this);
-    this.validators = new ValidatorMethods(this);
+    // Install axios error handler
+    this.installErrorHandler();
   }
 
-  /** @private */
-  resetAccessToken(scope: string) {
+  private installErrorHandler() {
+    this.api.instance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        error.message =
+          `Maventa HTTP error ${error.response.status} (${error.response.statusText}): ` + JSON.stringify(error.response.data);
+        throw error;
+      }
+    );
+  }
+
+  private resetAccessToken(scope: string) {
     this.accessTokens[scope] = undefined;
   }
 
-  /** @private */
-  async refreshAccessToken(scope: string): Promise<void> {
+  private async securityWorker(maventa: MaventaApiClient) {
+    const axiosRequestConfig: AxiosRequestConfig = {};
+    const scope = maventa.options.scope || 'eui';
+    let accessToken = maventa.accessTokens[scope];
+
     // Check if access token is expired
-    if (!this.accessTokens?.[scope]) {
-      const response: any = await got({
-        method: 'POST',
-        url: `${this.options.apiBaseUrl}/oauth2/token`,
-        timeout: {
-          request: this.options.timeout
-        },
-        form: {
-          grant_type: 'client_credentials',
-          client_id: this.options.maventaClientId,
-          client_secret: this.options.maventaClientSecret,
-          scope,
-          vendor_api_key: this.options.maventaVendorApiKey
-        },
-        resolveBodyOnly: true
-      }).json();
-
-      this.accessTokens[scope] = response.access_token;
-
-      // Reset access token when it expires
-      this.accessTokensTimeout[scope] = setTimeout(() => this.resetAccessToken(scope), response.expires_in * 1000);
+    if (!accessToken) {
+      const response = await maventa.api.token.postOauth2Token({
+        grant_type: 'client_credentials',
+        scope,
+        client_id: maventa.options.clientId,
+        client_secret: maventa.options.clientSecret,
+        vendor_api_key: maventa.options.vendorApiKey
+      });
+      accessToken = {
+        ...response.data,
+        // Reset access token when it expires
+        timeout: setTimeout(() => maventa.resetAccessToken(scope), response.data.expires_in * 1000)
+      };
+      maventa.accessTokens[scope] = accessToken;
     }
-  }
 
-  /** @private */
-  async getDefaultHttpHeaders(scope: string): Promise<Headers> {
-    await this.refreshAccessToken(scope);
-
-    return {
-      Authorization: `Bearer ${this.accessTokens[scope]}`
-    };
-  }
-
-  async request(method: Method, uri: string, body?: any, params?: any, scope?: string, api?: string): Promise<any> {
-    const gotOptions: OptionsOfJSONResponseBody = {
-      method,
-      url: `${api ? this.options.apiBaseUrl?.replace('ax', api) : this.options.apiBaseUrl}/${uri}`,
-      timeout: {
-        request: this.options.timeout
-      },
-      headers: await this.getDefaultHttpHeaders(scope || 'global company'),
-      throwHttpErrors: false,
-      responseType: 'json'
+    axiosRequestConfig.headers = {
+      Authorization: `Bearer ${accessToken.access_token}`
     };
 
-    // If body is defined
-    if (body) {
-      gotOptions.body = body;
-    }
-
-    // If params is defined
-    if (params) {
-      gotOptions.searchParams = params;
-    }
-
-    const response = await got(gotOptions);
-
-    // Status code should be 200 OK or 201 Created
-    if (![200, 201].includes(response.statusCode)) {
-      throw new Error(`Maventa HTTP error ${response.statusCode} (${response.statusMessage}): ${JSON.stringify(response.body)}`);
-    }
-
-    return response.body;
+    return axiosRequestConfig;
   }
+}
+
+class MaventaApiClientInstance extends Api<any> {
+  constructor(config?: ApiConfig<any>) {
+    super(config);
+  }
+
+  // Override createFormData because FormData needs to be imported manually
+  // @ts-ignore:next-line
+  protected createFormData(input: Record<string, unknown>): FormData {
+    return Object.keys(input || {}).reduce((formData, key) => {
+      const property = input[key];
+      const propertyContent: any[] = property instanceof Array ? property : [property];
+
+      for (const formItem of propertyContent) {
+        const isFileType = formItem instanceof FileBuffer;
+
+        if (isFileType) {
+          formData.append(key, formItem.buffer, {
+            filename: formItem.name,
+            contentType: formItem.type
+          });
+        } else {
+          formData.append(key, this.stringifyFormItem(formItem));
+        }
+      }
+
+      return formData;
+    }, new FormData());
+  }
+
+  helpers = {
+    /**
+     * @description Upload new invoice with Maventa's invoice image.
+     *
+     * @tags invoices
+     * @name PostV1Invoices
+     * @summary Upload new invoice
+     * @request POST:/v1/invoices
+     * @secure
+     * @response `201` `InvoicesHttpApiEntitiesInvoice` Upload new invoice
+     */
+    postInvoice: async (
+      fileBuffer: Buffer,
+      fileMetadata: { filename: string; contentType: string },
+      options: object = {},
+      params: RequestParams = {}
+    ) => {
+      return await this.invoices.postV1Invoices(
+        {
+          ...options,
+          file: new FileBuffer(fileBuffer, fileMetadata.filename, fileMetadata.contentType)
+        },
+        params
+      );
+    },
+
+    /**
+     * @description Upload new invoice with invoice image (XML and PDF).
+     *
+     * @tags invoices
+     * @name PostV1Invoices
+     * @summary Upload new invoice
+     * @request POST:/v1/invoices
+     * @secure
+     * @response `201` `InvoicesHttpApiEntitiesInvoice` Upload new invoice
+     */
+    postInvoiceZip: async (invoiceXml: Buffer, invoicePdf: Buffer, options: object = {}, params: RequestParams = {}) => {
+      // Initialize JSZip
+      const zip = new JSZip();
+
+      // Add invoice XML file to ZIP file
+      zip.file('invoice.xml', invoiceXml);
+
+      // Add invoice PDF file to ZIP file
+      zip.file('invoice.pdf', invoicePdf);
+
+      // Generate ZIP file
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+
+      return await this.invoices.postV1Invoices(
+        {
+          ...options,
+          file: new FileBuffer(zipBuffer, 'invoice.zip', 'application/zip')
+        },
+        params
+      );
+    }
+  };
 }
 
 export class MaventaMassPrintingApiClient {
   options: IMaventaMassPrintingApiClientOptions;
+  gotInstance: Got;
 
   constructor(options: IMaventaMassPrintingApiClientOptions) {
     // Set default options
     options.apiBaseUrl = options.apiBaseUrl || 'https://payslip.maventa.com';
     options.timeout = options.timeout || 120000;
 
-    if (!options.maventaClientId) {
-      throw new Error('Missing options.maventaClientId');
+    if (!options.clientId) {
+      throw new Error('Maventa error: Missing options.clientId');
     }
-    if (!options.maventaClientSecret) {
-      throw new Error('Missing options.maventaClientSecret');
+    if (!options.clientSecret) {
+      throw new Error('Maventa error: Missing options.clientSecret');
     }
-    if (!options.maventaVendorApiKey) {
-      throw new Error('Missing options.maventaVendorApiKey');
+    if (!options.vendorApiKey) {
+      throw new Error('Maventa error: Missing options.vendorApiKey');
     }
 
     this.options = options;
+
+    const gotOptions: any = {};
+
+    // Use internal keepAliveAgent by default
+    if (this.options.keepAliveAgent === true || this.options.keepAliveAgent === undefined) {
+      gotOptions.keepAliveAgent = httpsAgent;
+    } else {
+      gotOptions.keepAliveAgent = this.options.keepAliveAgent;
+    }
+
+    // Use internal dnsCache by default (falls back to got's dnsCache)
+    if (this.options.dnsCache === true || this.options.dnsCache === undefined) {
+      gotOptions.dnsCache = true;
+    } else {
+      gotOptions.dnsCache = this.options.dnsCache;
+    }
+
+    // Set gotInstance defaults
+    this.gotInstance = got.extend({
+      // Agent options
+      agent: { https: gotOptions.keepAliveAgent || undefined },
+
+      // DNS caching options
+      dnsCache: gotOptions.dnsCache || undefined
+    });
   }
 
   async request(method: Method, uri: string, form?: any, params?: any): Promise<any> {
@@ -143,8 +276,8 @@ export class MaventaMassPrintingApiClient {
         request: this.options.timeout
       },
       headers: {
-        'COMPANY-UUID': this.options.maventaClientId,
-        'USER-API-KEY': this.options.maventaClientSecret
+        'COMPANY-UUID': this.options.clientId,
+        'USER-API-KEY': this.options.clientSecret
       },
       throwHttpErrors: false
     };
@@ -159,7 +292,7 @@ export class MaventaMassPrintingApiClient {
       gotOptions.searchParams = params;
     }
 
-    const response = await got(gotOptions);
+    const response = await this.gotInstance(gotOptions);
 
     // Status code should be 200 OK
     if (![200].includes(response.statusCode)) {
@@ -172,13 +305,13 @@ export class MaventaMassPrintingApiClient {
   /** Sends a letter to Mass printing service */
   async send(options: IMaventaMassPrintingSendOptions): Promise<string> {
     if (!options.filename) {
-      throw new Error('Missing options.filename');
+      throw new Error('Maventa error: Missing options.filename');
     }
     if (options.filename.toLowerCase().split('.').pop() !== 'zip') {
-      throw new Error('Invalid options.filename');
+      throw new Error('Maventa error: Invalid options.filename');
     }
     if (!options.file) {
-      throw new Error('Missing options.file');
+      throw new Error('Maventa error: Missing options.file');
     }
     options.document_type = options.document_type || 'PDFXML';
     options.letter_class = options.letter_class || 'priority';
@@ -189,7 +322,7 @@ export class MaventaMassPrintingApiClient {
 
     const form = {
       ...options,
-      sw_api_key: this.options.maventaVendorApiKey,
+      sw_api_key: this.options.vendorApiKey,
       file: options.file.toString('base64'),
       zipHash: hash,
       hash

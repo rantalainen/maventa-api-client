@@ -1,39 +1,59 @@
+import { ApiConfig, APIEntitiesOAuthToken } from './api';
+import CacheableLookup from 'cacheable-lookup';
+import https from 'https';
+
 export interface IMaventaApiClientOptions {
   /** Maventa client id (company UUID) for authentication (identifies a single company) */
-  maventaClientId: string;
+  clientId: string;
   /** Maventa client secret (user api key) for authentication (identifies a single user) */
-  maventaClientSecret: string;
+  clientSecret: string;
   /** Maventa vendor api key for authentication (identifies a partner) */
-  maventaVendorApiKey: string;
+  vendorApiKey: string;
+  /**
+   * Scopes let you specify what type of access you need and limit access for granted OAuth tokens.
+   * Defaults to `eui`.
+   */
+  scope?: string;
+}
 
+export interface IMaventaApiClientConfig extends ApiConfig<any> {
   /**
    * API base url,
    * by default: `https://ax.maventa.com`.
    * Use `https://ax-stage.maventa.com` for testing.
    */
-  apiBaseUrl?: string;
-
+  baseURL?: string;
   /** Request timeout in milliseconds, defaults to 120000 (120 secs) */
   timeout?: number;
+  /** Instance of `https.Agent` or `true` to enable internal Keep Alive Agent, defaults to `true` */
+  keepAliveAgent?: boolean | https.Agent;
+  /** Instance of `cacheable-lookup` or `true` to enable internal DNS cache, defaults to `true` */
+  dnsCache?: boolean | CacheableLookup;
+}
+
+export interface IMaventaApiClientAccessToken extends APIEntitiesOAuthToken {
+  timeout: NodeJS.Timeout;
 }
 
 export interface IMaventaMassPrintingApiClientOptions {
   /** Maventa client id (company UUID) for authentication (identifies a single company) */
-  maventaClientId: string;
+  clientId: string;
   /** Maventa client secret (user api key) for authentication (identifies a single user) */
-  maventaClientSecret: string;
+  clientSecret: string;
   /** Maventa vendor api key for authentication (identifies a partner) */
-  maventaVendorApiKey: string;
-
+  vendorApiKey: string;
   /**
    * API base url,
    * by default: `https://payslip.maventa.com/`.
    * Use `https://payslip-stage.maventa.com` for testing.
    */
   apiBaseUrl?: string;
-
   /** Request timeout in milliseconds, defaults to 120000 (120 secs) */
   timeout?: number;
+  /** Instance of `https.Agent` or `true` to enable internal Keep Alive Agent, defaults to `true` */
+  keepAliveAgent?: boolean | https.Agent;
+  /** Instance of `cacheable-lookup` or `true` to enable internal DNS cache, defaults to `true` */
+  dnsCache?: boolean | CacheableLookup;
 }
 
 export interface IMaventaMassPrintingSendOptions {
