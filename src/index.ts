@@ -138,8 +138,7 @@ class MaventaApiClientInstance extends Api<any> {
   }
 
   // Override createFormData because FormData needs to be imported manually
-  // @ts-ignore:next-line
-  protected createFormData(input: Record<string, unknown>): FormData {
+  protected createFormData(input: Record<string, unknown>): any {
     return Object.keys(input || {}).reduce((formData, key) => {
       const property = input[key];
       const propertyContent: any[] = property instanceof Array ? property : [property];
