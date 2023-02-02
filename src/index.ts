@@ -18,6 +18,7 @@ import JSZip from 'jszip';
 
 // DNS cache to prevent ENOTFOUND and other such issues
 const dnsCache = new CacheableLookup();
+let dnsCacheInstalled = false;
 
 // https://learn.microsoft.com/en-us/azure/app-service/app-service-web-nodejs-best-practices-and-troubleshoot-guide#my-node-application-is-making-excessive-outbound-calls
 // https://github.com/MicrosoftDocs/azure-docs/issues/29600#issuecomment-607990556
@@ -66,7 +67,10 @@ export class MaventaApiClient {
 
     // Use internal dnsCache by default
     if (config.dnsCache === true || config.dnsCache === undefined) {
-      dnsCache.install(config.httpsAgent);
+      if (!dnsCacheInstalled) {
+        dnsCache.install(config.httpsAgent);
+        dnsCacheInstalled = true;
+      }
     }
 
     // Delete custom properties before config is assigned
