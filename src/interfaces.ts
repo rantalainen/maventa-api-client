@@ -1,4 +1,5 @@
 import { ApiConfig, APIEntitiesOAuthToken } from './api';
+import { ApiConfig as BillingApiConfig } from './billing-api';
 import CacheableLookup from 'cacheable-lookup';
 import https from 'https';
 
@@ -75,4 +76,33 @@ export interface IMaventaMassPrintingSendOptions {
   color_print?: boolean;
   /** Duplex printing for both sides of the letter. Default is false. */
   duplex?: boolean;
+}
+
+export interface IMaventaBillingApiClientOptions {
+  /** Maventa client id (company UUID) for authentication (identifies a single company) */
+  clientId: string;
+  /** Maventa client secret (user api key) for authentication (identifies a single user) */
+  clientSecret: string;
+  /** Maventa vendor api key for authentication (identifies a partner) */
+  vendorApiKey: string;
+  /**
+   * Scopes let you specify what type of access you need and limit access for granted OAuth tokens.
+   * Defaults to `billing:reports`.
+   */
+  scope?: string;
+}
+
+export interface IMaventaBillingApiClientConfig extends BillingApiConfig<any> {
+  /**
+   * API base url,
+   * by default: `https://bling.maventa.com`.
+   * Use `https://bling-stage.maventa.com` for testing.
+   */
+  baseURL?: string;
+  /** Request timeout in milliseconds, defaults to 120000 (120 secs) */
+  timeout?: number;
+  /** Instance of `https.Agent` or `true` to enable internal Keep Alive Agent, defaults to `true` */
+  keepAliveAgent?: boolean | https.Agent;
+  /** Instance of `cacheable-lookup` or `true` to enable internal DNS cache, defaults to `true` */
+  dnsCache?: boolean | CacheableLookup;
 }
