@@ -2,7 +2,7 @@
 
 **MaventaApiClient** is a third party [Maventa AutoXChange API](https://documentation.maventa.com/rest-api/#autoxchange-api) client for NodeJS. It is a wrapper around an API client that has been [automatically generated](https://www.npmjs.com/package/swagger-typescript-api) using the [OpenAPI schema](https://ax.maventa.com/swagger_doc) provided by Maventa.
 
-This package also includes **MaventaMassPrintingApiClient** for the [Maventa Payslip API](https://documentation.maventa.com/rest-api/#payslip-api).
+This package also includes **MaventaMassPrintingApiClient** for the [Maventa Payslip API](https://documentation.maventa.com/rest-api/#payslip-api) and **MaventaBillingApiClient** for the Maventa Billing API using its' [OpenAPI schema](https://bling.maventa.com/api/billing/v2/swagger_yml) provided by Maventa.
 
 ## Installation
 
@@ -15,13 +15,13 @@ npm install @rantalainen/maventa-api-client
 ### Import to NodeJS project
 
 ```javascript
-const { MaventaApiClient, MaventaMassPrintingApiClient } = require('@rantalainen/maventa-api-client');
+const { MaventaApiClient, MaventaMassPrintingApiClient, MaventaBillingApiClient } = require('@rantalainen/maventa-api-client');
 ```
 
 ### Import to TypeScript project
 
 ```javascript
-import { MaventaApiClient, MaventaMassPrintingApiClient } from '@rantalainen/maventa-api-client';
+import { MaventaApiClient, MaventaMassPrintingApiClient, MaventaBillingApiClient } from '@rantalainen/maventa-api-client';
 ```
 
 ## AutoXChange API
@@ -41,7 +41,11 @@ const maventa = new MaventaApiClient({
 });
 ```
 
-Available methods can be found in [Maventa Swagger](https://swagger.maventa.com/?urls.primaryName=PROD%20-%20AutoXChange%20API).
+Available methods can be found in [Maventa Swagger](https://swagger.maventa.com/?urls.primaryName=PROD%20-%20AutoXChange%20API). Use `maventa.api` to access them:
+
+```javascript
+const companies = await maventa.api.companies.getV1Companies();
+```
 
 ## Payslip API
 
@@ -92,6 +96,32 @@ Response for sending: https://documentation.maventa.com/integration-guide/#respo
 const fileBuffer = fs.readFileSync('letter_example.zip');
 const result = await maventaMassPrinting.send({ filename: 'letter_example.zip', file: fileBuffer });
 console.log(result);
+```
+
+## Billing API
+
+Billing API (also known as AutoInvoice Billing API) can be used fetch billing transactions from Maventa. It uses `MaventaApiClient` under the hood to obtain the access token.
+
+### Setup client with options
+
+In order to obtain an API key, please contact Maventa Integration Support. An API key is needed to access all API functions. Use the invoice receiving company's UUID as clientId.
+
+```javascript
+const maventaBilling = new MaventaBillingApiClient({
+  // Required options:
+  clientId: 'company_UUID',
+  clientSecret: 'api_key',
+  vendorApiKey: 'vendor_api_key'
+});
+```
+
+Available methods can be found in [Maventa Swagger](https://swagger.maventa.com/?urls.primaryName=PROD%20-%20AutoInvoice%20Billing%20API). Use `maventaBilling.api.billing` to access them:
+
+```javascript
+const transactions = await maventaBilling.api.billing.billingV2ReportsBillingCompanyTransactionsList({
+  year: 2023,
+  month: 3
+});
 ```
 
 ## Resources

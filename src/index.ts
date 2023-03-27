@@ -1,11 +1,14 @@
 import got, { Got, Method, OptionsOfJSONResponseBody } from 'got';
 import { Api, ApiConfig, RequestParams } from './api';
+import { Api as BillingApi, ApiConfig as BillingApiConfig, RequestParams as BillingRequestParams } from './billing-api';
 import { AxiosRequestConfig } from 'axios';
 import { HttpsAgent } from 'agentkeepalive';
 import {
   IMaventaApiClientAccessToken,
   IMaventaApiClientConfig,
   IMaventaApiClientOptions,
+  IMaventaBillingApiClientConfig,
+  IMaventaBillingApiClientOptions,
   IMaventaMassPrintingApiClientOptions,
   IMaventaMassPrintingSendOptions
 } from './interfaces';
@@ -339,5 +342,129 @@ export class MaventaMassPrintingApiClient {
     }
 
     return response;
+  }
+}
+
+export class MaventaBillingApiClient {
+  options: IMaventaBillingApiClientOptions;
+  config: Omit<IMaventaBillingApiClientConfig, 'keepAliveAgent' | 'dnsCache'>;
+  readonly api: BillingApi<any>;
+  readonly maventa: MaventaApiClient;
+  private accessTokens: { [scope: string]: IMaventaApiClientAccessToken | undefined } = {};
+
+  constructor(options: IMaventaBillingApiClientOptions, config: IMaventaBillingApiClientConfig = {}) {
+    // Set default config
+    config.baseURL = config.baseURL || 'https://bling.maventa.com';
+    config.timeout = config.timeout || 120000;
+
+    if (!options.clientId) {
+      throw new Error('Maventa error: Missing options.clientId');
+    }
+    if (!options.clientSecret) {
+      throw new Error('Maventa error: Missing options.clientSecret');
+    }
+    if (!options.vendorApiKey) {
+      throw new Error('Maventa error: Missing options.vendorApiKey');
+    }
+
+    // If axios config httpsAgent is not set
+    if (!config.httpsAgent) {
+      // Use internal keepAliveAgent by default
+      if (config.keepAliveAgent === true || config.keepAliveAgent === undefined) {
+        config.httpsAgent = httpsAgent;
+      } else {
+        if (config.keepAliveAgent === false) {
+          config.httpsAgent = new https.Agent({ keepAlive: false });
+        } else {
+          config.httpsAgent = config.keepAliveAgent;
+        }
+      }
+    }
+
+    // Use internal dnsCache by default
+    if (config.dnsCache === true || config.dnsCache === undefined) {
+      if (!dnsCacheInstalled) {
+        dnsCache.install(config.httpsAgent);
+        dnsCacheInstalled = true;
+      }
+    }
+
+    // Initialize Maventa Api Client Instance for token fetching
+    this.maventa = new MaventaApiClient(
+      {
+        clientId: options.clientId,
+        clientSecret: options.clientSecret,
+        vendorApiKey: options.vendorApiKey,
+        scope: options.scope
+      },
+      {
+        // Use the same cache and keepAliveAgent as in the parent (Billing Api Client)
+        dnsCache: config.dnsCache,
+        keepAliveAgent: config.keepAliveAgent
+      }
+    );
+
+    // Delete custom properties before config is assigned
+    delete config.keepAliveAgent;
+    delete config.dnsCache;
+
+    this.options = options;
+    this.config = config;
+
+    // Initialize Maventa Billing Api Client Instance
+    this.api = new BillingApi({
+      ...this.config,
+      securityWorker: this.config.securityWorker || this.securityWorker
+    });
+
+    this.api.setSecurityData(this);
+
+    // Install axios error handler
+    this.installErrorHandler();
+  }
+
+  private installErrorHandler() {
+    this.api.instance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        error.message =
+          `Maventa Billing HTTP error ${error.response.status} (${error.response.statusText}): ` + JSON.stringify(error.response.data);
+        throw error;
+      }
+    );
+  }
+
+  private resetAccessToken(scope: string) {
+    this.accessTokens[scope] = undefined;
+  }
+
+  private async securityWorker(maventaBilling: MaventaBillingApiClient) {
+    const axiosRequestConfig: AxiosRequestConfig = {};
+    const scope = maventaBilling.options.scope || 'billing:reports';
+    let accessToken = maventaBilling.accessTokens[scope];
+
+    // Check if access token is expired
+    if (!accessToken) {
+      // Maventa API Client reference is utilized here to fetch the token
+      const response = await maventaBilling.maventa.api.token.postOauth2Token({
+        grant_type: 'client_credentials',
+        scope,
+        client_id: maventaBilling.options.clientId,
+        client_secret: maventaBilling.options.clientSecret,
+        vendor_api_key: maventaBilling.options.vendorApiKey
+      });
+      accessToken = {
+        ...response.data,
+        // Reset access token when it expires
+        timeout: setTimeout(() => maventaBilling.resetAccessToken(scope), response.data.expires_in * 1000)
+      };
+      maventaBilling.accessTokens[scope] = accessToken;
+    }
+
+    axiosRequestConfig.headers = {
+      Authorization: `Bearer ${accessToken.access_token}`
+    };
+
+    return axiosRequestConfig;
   }
 }
