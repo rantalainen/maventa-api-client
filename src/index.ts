@@ -2,6 +2,7 @@ import got, { Got, Method, OptionsOfJSONResponseBody } from 'got';
 import { Api, ApiConfig, RequestParams } from './api';
 import { Api as BillingApi, ApiConfig as BillingApiConfig, RequestParams as BillingRequestParams } from './billing-api';
 import { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { HttpsAgent } from 'agentkeepalive';
 import {
   IMaventaApiClientAccessToken,
@@ -10,7 +11,11 @@ import {
   IMaventaBillingApiClientConfig,
   IMaventaBillingApiClientOptions,
   IMaventaMassPrintingApiClientOptions,
-  IMaventaMassPrintingSendOptions
+  IMaventaMassPrintingSendOptions,
+  IMaventaPayslipReceiverServiceClientOptions,
+  IPayrollContractCustomerId,
+  IPayslipBatchId,
+  IPayslipProcessingStatusAck
 } from './interfaces';
 import { FileBuffer } from './file-buffer';
 import { createHash } from 'crypto';
@@ -18,6 +23,7 @@ import https from 'https';
 import CacheableLookup from 'cacheable-lookup';
 import FormData from 'form-data';
 import JSZip from 'jszip';
+import { createClientAsync, Client } from 'soap';
 
 // DNS cache to prevent ENOTFOUND and other such issues
 const dnsCache = new CacheableLookup();
@@ -187,6 +193,7 @@ class MaventaApiClientInstance extends Api<any> {
       return await this.invoices.postV1Invoices(
         {
           ...options,
+          //@ts-ignore
           file: new FileBuffer(fileBuffer, fileMetadata.filename, fileMetadata.contentType)
         },
         params
@@ -219,6 +226,7 @@ class MaventaApiClientInstance extends Api<any> {
       return await this.invoices.postV1Invoices(
         {
           ...options,
+          //@ts-ignore
           file: new FileBuffer(zipBuffer, 'invoice.zip', 'application/zip')
         },
         params
@@ -466,5 +474,179 @@ export class MaventaBillingApiClient {
     };
 
     return axiosRequestConfig;
+  }
+}
+
+export class MaventaPayslipReceiverServiceClient {
+  options: IMaventaPayslipReceiverServiceClientOptions;
+
+  constructor(options: IMaventaPayslipReceiverServiceClientOptions) {
+    // Set default options
+    options.apiBaseUrl = options.apiBaseUrl || 'https://verkkopalkka.maventa.fi';
+
+    if (!options.user) {
+      throw new Error('Maventa error: Missing options.user');
+    }
+    if (!options.password) {
+      throw new Error('Maventa error: Missing options.password');
+    }
+
+    this.options = options;
+  }
+
+  /** Creates client for SOAP API endpoints */
+  async createSoapClient(): Promise<Client> {
+    try {
+      const axiosInstance = axios.create();
+
+      const soapClient = await createClientAsync(`${this.options.apiBaseUrl}/Service/PayslipReceiverService.svc?wsdl`, {
+        endpoint: `${this.options.apiBaseUrl}/Service/PayslipReceiverService.svc`,
+        request: axiosInstance
+      });
+
+      soapClient.addSoapHeader({ Username: this.options.user });
+      soapClient.addSoapHeader({ Password: this.options.password });
+
+      return soapClient;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getContractActiveCustomerVatIdentifiers() {
+    try {
+      const soapClient = await this.createSoapClient();
+
+      const response = await soapClient.GetContractActiveCustomerVatIdentifiersAsync();
+      return response[2];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /** Activate customer (i.e. the company paying the salary) before delivering payslips. */
+  async activateCustomerPayrollContract(
+    /** Customer business identity code */
+    vatId: string,
+    /** Customer name */
+    name: string,
+    /** An external identifier for the activation, max 32 characters */
+    externalIdentifier: string,
+    /** Contract begin date in ISO 8601 format. */
+    contractBeginDate: string
+  ): Promise<IPayrollContractCustomerId> {
+    try {
+      const soapClient = await this.createSoapClient();
+
+      soapClient.addSoapHeader({ 'tns:VatId': vatId });
+      soapClient.addSoapHeader({ 'tns:Name': name });
+      soapClient.addSoapHeader({ 'tns:ExternalIdentifier': externalIdentifier });
+      soapClient.addSoapHeader({ 'tns:ContractBeginDate': contractBeginDate });
+
+      const response = await soapClient.ActivateCustomerPayrollContractAsync({});
+      return response[2];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deactivateCustomerPayrollContract(
+    /** Customer business identity code */
+    vatId: string
+  ) {
+    try {
+      const soapClient = await this.createSoapClient();
+
+      soapClient.addSoapHeader({ 'tns:VatId': vatId });
+
+      const response = await soapClient.DeactivateCustomerPayrollContractAsync({});
+      return response[2];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async submitPayslips(
+    /** Filename including file extension */
+    fileName: string,
+    /** Payslip XML file as buffer - Payslips XML element can contain multiple payslip elements */
+    file: Buffer
+  ): Promise<IPayslipBatchId> {
+    try {
+      const soapClient = await this.createSoapClient();
+
+      /** SubmitPayslips */
+      soapClient.addSoapHeader({ 'tns:PayslipVersion': '2.0' });
+      soapClient.addSoapHeader({ 'tns:OriginalFileName': fileName });
+      soapClient.addSoapHeader({ 'tns:Convert': false });
+
+      // Initialize JSZip
+      const zip = new JSZip();
+
+      // Add payslip XML file to ZIP file
+      zip.file(fileName, file);
+
+      // Generate ZIP file
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+
+      const response = await soapClient.SubmitPayslipsAsync({
+        'tns:ZipFile': zipBuffer.toString('base64')
+      });
+      return response[2];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPayslipProcessingStatusAck(
+    /** Range start date in ISO 8601 format */
+    startDate?: string,
+    /** Range end date in ISO 8601 format */
+    endDate?: string,
+    /**  Specific payslip HeaderData > MessageId */
+    messageId?: string,
+    /** Batch id */
+    batchId?: string
+  ): Promise<IPayslipProcessingStatusAck> {
+    try {
+      const soapClient = await this.createSoapClient();
+
+      if (startDate) soapClient.addSoapHeader({ 'tns:StartDate': startDate });
+      if (endDate) soapClient.addSoapHeader({ 'tns:EndDate': endDate });
+      if (messageId) soapClient.addSoapHeader({ 'tns:MessageId': messageId });
+      if (batchId) soapClient.addSoapHeader({ 'tns:BatchId': batchId });
+
+      const response = await soapClient.GetPayslipProcessingStatusAckAsync();
+      return response[2];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deletePayslip(
+    /** Batch id from submitPayslips */
+    batchId?: string,
+    /** The SSN of the payslip’s payee */
+    personId?: string,
+    /** String set in PayslipXML 2.0 when submitting the payslip */
+    messageId?: string,
+    /** Date of the API receiving the batch in ISO 8601 format */
+    receivedDate?: string,
+    /** Payslip’s payment date in ISO 8601 format */
+    dateOfPayment?: string
+  ) {
+    try {
+      const soapClient = await this.createSoapClient();
+
+      if (batchId) soapClient.addSoapHeader({ 'tns:BatchId': batchId });
+      if (personId) soapClient.addSoapHeader({ 'tns:PersonId': personId });
+      if (messageId) soapClient.addSoapHeader({ 'tns:MessageId': messageId });
+      if (receivedDate) soapClient.addSoapHeader({ 'tns:ReceivedDate': receivedDate });
+      if (dateOfPayment) soapClient.addSoapHeader({ 'tns:DateOfPayment': dateOfPayment });
+
+      await soapClient.DeletePayslipAsync();
+    } catch (error) {
+      throw error;
+    }
   }
 }

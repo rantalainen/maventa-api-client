@@ -106,3 +106,49 @@ export interface IMaventaBillingApiClientConfig extends BillingApiConfig<any> {
   /** Instance of `cacheable-lookup` or `true` to enable internal DNS cache, defaults to `true` */
   dnsCache?: boolean | CacheableLookup;
 }
+
+export interface IMaventaPayslipReceiverServiceClientOptions {
+  /** Username for authentication */
+  user: string;
+  /** Password for authentication */
+  password: string;
+  /**
+   * API base url,
+   * by default: `https://verkkopalkka.maventa.fi`.
+   * Use `https://verkkopalkkademo.maventa.fi` for testing.
+   */
+  apiBaseUrl?: string;
+}
+
+export interface IPayslipProcessingStatusAck {
+  Acks: {
+    Ack: StatusAck | StatusAck[];
+  };
+}
+
+type StatusAck = {
+  Id: string;
+  Timestamp: string;
+  ReferencedMessage: {
+    MessageId: null | string;
+    Timestamp: string;
+  };
+  Response: string;
+  Description: string;
+};
+
+export interface IPayslipBatchId {
+  DeliveryBatchId: string;
+}
+
+export interface IPayrollContractCustomerId {
+  CustomerId: string;
+}
+
+export interface IContractActiveCustomerVatIdentifiers {
+  CustomerVatIds: { string: string | string[] };
+}
+
+export interface IDeactivatePayrollContract {
+  DeactivationSucceed: 'true' | 'false';
+}

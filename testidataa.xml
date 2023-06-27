@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="MaventaPayslip_2.0.2.xsl" ?>
+<Payslips xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Payslip>
+        <Version>2.0</Version>
+        <HeaderData>
+            <MessageId>123</MessageId>
+            <Timestamp>20180220T014832</Timestamp>
+            <DocumentTitle>
+                <Value>Palkkalaskelma</Value>
+            </DocumentTitle>
+            <!-- pakollinen tieto -->
+            <PayDate>20190907</PayDate>
+            <!-- Pääheadertieto -->
+            <NetPayment>
+                <Label>Maksetaan</Label>
+                <Value>3445,56 EUR</Value>
+            </NetPayment>
+            <!-- Pääheadertieto -->
+            <Payer>Teron Betoni Oy</Payer>
+            <!-- y-tunnus sidebariin työnantajan alle -->
+            <PartyIdentifications>
+                <PartyIdentificationId>
+                    <Authority>Y-tunnus</Authority>
+                    <Value>0147683-6</Value>
+                    <Extension>Vantaa</Extension>
+                </PartyIdentificationId>
+            </PartyIdentifications>
+            <!-- ei näytetä palkkalaskelmassa -->
+            <DeliveryChannels>
+                <DeliveryChannel>
+                    <DeliveryMethodCode>01</DeliveryMethodCode>
+                    <DeliveryInfo>
+                        <BankCode>102035</BankCode>
+                    </DeliveryInfo>
+                </DeliveryChannel>
+            </DeliveryChannels>
+            <LanguageCode>en</LanguageCode>
+            <!-- Liitetiedostot: -->
+            <Attachments>
+                <Attachment>
+                    <AttachmentIndex>1</AttachmentIndex>
+                    <FileType>pdf</FileType>
+                    <Filename>Tiedosto1.pdf</Filename>
+                </Attachment>
+            </Attachments>
+        </HeaderData>
+        <PayPeriod>
+            <!-- ei näytetä palkkalaskelmassa -->
+            <Heading>Palkkakausi</Heading>
+            <!-- Pääheadertieto -->
+            <DateOfPayment>
+                <Label>Maksupäivä</Label>
+                <Date>01.02.2019</Date>
+            </DateOfPayment>
+            <!-- Pääheadertieto -->
+            <Period>
+                <Label>PALKKAKAUSI</Label>
+                <PeriodCode>01.01.2019 - 31.01.2019</PeriodCode>
+            </Period>
+            <!-- Ansaintakautta ei näyteä palkkalaskelmassa -->
+            <PeriodDates>
+                <Label>Tuntipalkkakausi</Label>
+                <StartDate>
+                    <Label>Alkupäivä</Label>
+                    <Date>1.4.2017</Date>
+                </StartDate>
+                <TermDate>
+                    <Label>Loppupäivä</Label>
+                    <Date>15.4.2017</Date>
+                </TermDate>
+            </PeriodDates>
+        </PayPeriod>
+        <Delivery>
+            <Heading>Osoitetiedot</Heading>
+            <!-- Sidebariin oman otsikon alle -->
+            <Sender>
+                <Heading>Työnantaja</Heading>
+                <Name>Teron Betoni Oy</Name>
+                <AddressLine>Betonipölynkatu 2</AddressLine>
+                <AddressLine>B 72</AddressLine>
+                <PostalCode>55555</PostalCode>
+                <PostOffice>Rumpula</PostOffice>
+                <CountryCode>FI</CountryCode>
+                <Country>Suomi-Finland</Country>
+                <Telephone>
+                    <PhoneNumber>0401234567</PhoneNumber>
+                    <MobileNumber>0401234568</MobileNumber>
+                </Telephone>
+                <EmailAddress>tero@betoni.fi</EmailAddress>
+            </Sender>
+            <!-- Tästä osiosta otetaan vain Heading pääheaderiin -->
+            <Recipient>
+                <Heading>Palkansaaja</Heading>
+                <RecipientName>
+                    <ForeName>Juha</ForeName>
+                    <SurName>Joutomies</SurName>
+                </RecipientName>
+                <AddressLine>Joutomaankatu 1</AddressLine>
+                <AddressLine>E 2</AddressLine>
+                <AddressLine>Talon takaoven postilaatikko</AddressLine>
+                <PostalCode>53230</PostalCode>
+                <PostOffice>Joutomaa</PostOffice>
+                <CountryCode>FI</CountryCode>
+                <Country>Suomi-Finland</Country>
+            </Recipient>
+            <!-- Sidebariin oman otsikon alle -->
+            <PayOffice>
+                <Heading>Palkanlasknta</Heading>
+                <Name>Joutomaan Tilitoimisto Oy</Name>
+                <AddressLine>Joutomaankatu 52</AddressLine>
+                <AddressLine>A 23</AddressLine>
+                <PostalCode>644389</PostalCode>
+                <PostOffice>Jouto</PostOffice>
+                <CountryCode>FI</CountryCode>
+                <Country>Suomi-Finland</Country>
+                <Telephone>
+                    <PhoneNumber>0401234567</PhoneNumber>
+                    <MobileNumber>0401234568</MobileNumber>
+                </Telephone>
+                <EmailAddress>palkat@joutotilit.fi</EmailAddress>
+            </PayOffice>
+        </Delivery>
+        <!-- suurinosa täältä sidebariin "Palkansaaja- ja työsuhdetiedot" otsikon alle -->
+        <Employee>
+            <!-- Sidebariin oma otsikko -->
+            <Heading>Palkansaaja- ja työsuhdetiedot</Heading>
+            <Identity>
+                <Label>Henkilötunnus</Label>
+                <EmployeeIdentity>
+                    <PersonID>240199-945A</PersonID>
+                    <!-- Joko TAI -->
+                    <!-- <EmployeeID>837244</EmployeeID> joku muu kuin suomi -->
+                </EmployeeIdentity>
+            </Identity>
+            <PersonNumber>
+                <Label>Palkansaajan numero</Label>
+                <Value>101</Value>
+            </PersonNumber>
+            <TaxNumber>
+                <Label>Veronumero</Label>
+                <Value>0387246802373</Value>
+            </TaxNumber>
+            <!-- Pääheaderiin palkansaajan nimet tästä -->
+            <EmployeeName>
+                <ForeName>Juha</ForeName>
+                <SurName>Joutomies</SurName>
+            </EmployeeName>
+            <EmploymentDate>
+                <Label>Työsuhteen aloituspäivä</Label>
+                <Value>01.04.2016</Value>
+            </EmploymentDate>
+            <EmploymentEndDate>
+                <Label>Työsuhteen Loppumispäivä</Label>
+                <Value>01.04.2016</Value>
+            </EmploymentEndDate>
+            <!-- sidebariin oman väliotsikon alle -->
+            <SalaryCategories>
+                <Heading>Palkkausperusteet</Heading>
+                <SalaryCategory>
+                    <Label>Vaativuusluokka</Label>
+                    <Value>10</Value>
+                </SalaryCategory>
+                <SalaryCategory>
+                    <Label>Palkkaryhmä</Label>
+                    <Value>12</Value>
+                </SalaryCategory>
+            </SalaryCategories>
+            <!-- "Palkkausperusteet" väliotsikon alle sidebariin -->
+            <PaymentType>
+                <Label>Palkkaustapa</Label>
+                <Value>Kuukausipalkkaus</Value>
+            </PaymentType>
+            <!-- Sidebariin "Palkansaaja- ja työsuhdetietojen" sisään  oman väliotsikon alle -->
+            <Classification>
+                <!-- oma väliotsikko -->
+                <Heading>Tehtävä</Heading>
+                <JobTitle>
+                    <Label>Ammattinimike</Label>
+                    <Value>Rakennusmies</Value>
+                </JobTitle>
+                <DeptCode>
+                    <Label>Yksikkö</Label>
+                    <Value>Joutomaan Betonipojat</Value>
+                </DeptCode>
+                <CostFollowUp>
+                    <Label>Kustannuspaikka</Label>
+                    <Value>0303030</Value>
+                </CostFollowUp>
+            </Classification>
+        </Employee>
+        <!-- Palkansaaja ja työsuhdetietojen sisälle nämä -->
+        <!-- sidebariin oman väliotsikon alle -->
+        <BankAccount>
+            <Heading>Pankkitili</Heading>
+            <AccountCode>
+                <Label>Tilinumero</Label>
+                <Value Type="IBAN">FI5810203500077878</Value>
+                <BIC>OKOYFIHH</BIC>
+            </AccountCode>
+        </BankAccount>
+        <CalculationBases>
+            <!-- headeria ei näytetä -->
+            <Heading>Palkanlaskennan perustiedot</Heading>
+            <SalaryRates>
+                <!-- laitetaan pääosioon laatikkotyylillä viestien yläpuolelle -->
+                <Heading>Kiinteät palkkatiedot</Heading>
+                <Record>
+                    <Label>Kuukausipalkka</Label>
+                    <Value>2500,00</Value>
+                </Record>
+                <Record>
+                    <Label>Tuntipalkka</Label>
+                    <Value>23,00</Value>
+                </Record>
+                <Record>
+                    <Label>Keskituntiansio</Label>
+                    <Value>25,00</Value>
+                </Record>
+                <Record>
+                    <Label>Vaativuuslisä</Label>
+                    <Value>2,50</Value>
+                </Record>
+                <Record>
+                    <Label>Kielilisä</Label>
+                    <Value>2,50</Value>
+                </Record>
+                <Record>
+                    <Label>Olosuhdelisä</Label>
+                    <Value>2,50</Value>
+                </Record>
+                <Record>
+                    <Label>Kylmälisä</Label>
+                    <Value>2,50</Value>
+                </Record>
+            </SalaryRates>
+            <!-- Sidebariin oman väliotsikon alle-->
+            <TaxationRates>
+                <Heading>Verokorttitiedot</Heading>
+                <Record>
+                    <Label>Perusprosentti</Label>
+                    <Value>20</Value>
+                </Record>
+                <Record>
+                    <Label>Lisäprosentti</Label>
+                    <Value>45%</Value>
+                </Record>
+                <Record>
+                    <Label>Verokortin voimaantulopäivä</Label>
+                    <Value>01.02.2018</Value>
+                </Record>
+                <Record>
+                    <Label>Verokortin tuloraja</Label>
+                    <Value>27 000,00</Value>
+                </Record>
+				<Record>
+                    <Label>Perityt ennakonpidätykset</Label>
+                    <Value>453</Value>
+                </Record>
+                <Record>
+                    <Label>Verokorttiin kohdistuvat ansiot</Label>
+                    <Value>3690,94</Value>
+                </Record>
+            </TaxationRates>
+            <!-- Vähennykset -->
+            <DeductionRates>
+                <Heading>Lakisääteiset vähennykset</Heading>
+                <Record>
+                    <Label>Työeläkemaksu</Label>
+                    <Value>221,65</Value>
+                </Record>
+                <Record>
+                    <Label>Työttömyysvakuutusmaksu</Label>
+                    <Value>57,66</Value>
+                </Record>
+                <Record>
+                    <Label>Työttömyysvakuutusmaksuv2</Label>
+                    <Value></Value>
+                </Record>
+            </DeductionRates>
+            <DeductionRates>
+                <Heading>Muut vähennykset</Heading>
+                <Record>
+                    <Label>Työeläkemaksu</Label>
+                    <Value>221,65</Value>
+                </Record>
+                <Record>
+                    <Label>Työttömyysvakuutusmaksu</Label>
+                    <Value>57,66</Value>
+                </Record>
+            </DeductionRates>
+            <!-- PALKANSAAJA- JA TYÖSUHDETIEDOT alle sidebarissa oman väliotsikon kanssa -->
+            <VacationRecords>
+                <Heading>Vuosilomatiedot</Heading>
+                <Record>
+                    <Label>KÄYTETTÄVISSÄ OLEVAT LOMAPÄIVÄT</Label>
+                    <Value>2</Value>
+                </Record>
+                <Record>
+                    <Label>UUSI LOMAPÄIVIEN KERTYMÄ</Label>
+                    <Value>0</Value>
+                </Record>
+                <Record>
+                    <Label>VUOSILOMAPÄIVÄN A-HINTA</Label>
+                    <Value>1 028,00</Value>
+                </Record>
+                <Record>
+                    <Label>LOMARAHAPÄIVÄN A-HINTA</Label>
+                    <Value>514,00</Value>
+                </Record>
+                <Record>
+                    <Label>VUOSILOMAPALKKA YHTEENSÄ</Label>
+                    <Value>1 028,00</Value>
+                </Record>
+                <Record>
+                    <Label>LOMARAHA YHTEENSÄ</Label>
+                    <Value>1 028,00</Value>
+                </Record>
+            </VacationRecords>
+        </CalculationBases>
+        <!-- Pääosion ensimmäiseksi näytettävät -->
+		<PayDetails>
+			<Heading>PALKKAERITTELY</Heading>
+			<Heading/>
+			<DetailLines>
+				<HeadingLine>
+					<Heading>Koodi</Heading>
+					<Heading>Selite</Heading>
+					<Heading>Määrä</Heading>
+					<Heading>A-hinta</Heading>
+					<Heading>Yhteensä</Heading>
+				</HeadingLine>
+				<DetailLine>
+					<PayCode>001</PayCode>
+					<Description>Kuukausipalkka</Description>
+					<Value/>
+					<Value/>
+					<Amount>5000,00</Amount>
+				</DetailLine>
+				<DetailLine>
+					<PayCode>100</PayCode>
+					<Description>Autoetu</Description>
+					<Value/>
+					<Value/>
+					<Amount>665,00</Amount>
+				</DetailLine>
+				<DetailLine>
+					<PayCode>101</PayCode>
+					<Description>Matkapuhelinetu</Description>
+					<Value/>
+					<Value/>
+					<Amount>20,00</Amount>
+				</DetailLine>
+				<DetailLine>
+					<PayCode>200</PayCode>
+					<Description>Ennakonpidätys</Description>
+					<Value/>
+					<Value/>
+					<Amount>-1876,05</Amount>
+				</DetailLine>
+				<DetailLine>
+					<PayCode>201</PayCode>
+					<Description>TyEL</Description>
+					<Value>5,15 %</Value>
+					<Value/>
+					<Amount>-292,78</Amount>
+				</DetailLine>
+				<DetailLine>
+					<PayCode>202</PayCode>
+					<Description>Tvak</Description>
+					<Value>0,60 %</Value>
+					<Value/>
+					<Amount>-34,11</Amount>
+				</DetailLine>
+				<DetailLine>
+					<PayCode>212</PayCode>
+					<Description>Lounasseteli</Description>
+					<Value>20 kpl</Value>
+					<Value>7.5 e</Value>
+					<Amount>-60,00</Amount>
+				</DetailLine>
+			</DetailLines>
+		</PayDetails>
+        <!-- Pääosioon -->
+		<EarningsToDate>
+			<Heading>PALKKATODISTUS</Heading>
+			<Set>
+				<SetHeading>
+					<Heading>Description</Heading>
+					<Heading>KAUSI</Heading>
+					<Heading>6-KK</Heading>
+					<Heading>KULUVA VUOSI</Heading>
+					<Heading>ED.VUOSI</Heading>
+				</SetHeading>
+				<Line>
+					<LineHeading>Rahapalkka</LineHeading>
+					<Cell>
+						<Label/>
+						<Value>978,96,00</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>14671,18</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>3773,46</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>27584,03</Value>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>LUONTOISETU</LineHeading>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>BRUTTOPALKKA</LineHeading>
+					<Cell>
+						<Label/>
+						<Value>978,96</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>14671,18</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>3773,46</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>27584,03</Value>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>VUOROLISÄT</LineHeading>
+					<Cell>
+						<Label/>
+						<Value>117,88</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>2208,59</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>717,10</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>3741,34</Value>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>LOMARAHA</LineHeading>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>958,08</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>479,04</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>479,04</Value>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>LOMAKORVAUS</LineHeading>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>ENNAKONPID.</LineHeading>
+					<Cell>
+						<Label/>
+						<Value>176,21</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>2694,25</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>776,20</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>4986,20</Value>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>LISÄTYÖT</LineHeading>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>4,44</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>41,05</Value>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>VEROVAPAA</LineHeading>
+					<Cell>
+						<Label/>
+						<Value>53,10</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>622,74</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>160,78</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>JÄSENMAKSU</LineHeading>
+					<Cell>
+						<Label/>
+						<Value>13,02</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>195,12</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>50,18</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+				</Line>
+				<Line>
+					<LineHeading>VÄHENNYKSET</LineHeading>
+					<Cell>
+						<Label/>
+						<Value>56,29</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>843,58</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value>216,97</Value>
+					</Cell>
+					<Cell>
+						<Label/>
+						<Value/>
+					</Cell>
+				</Line>
+			</Set>
+		</EarningsToDate>
+        <Messages>
+            <Heading>Viestit</Heading>
+            <!-- PERMANENT VIESTIT OVAT TILITOIMISTON ALLE SIDEBARIIN LAITETTAVIA PYSYVIÄ VIESTEJÄ -->
+            <Permanent>
+                <Label>Päivärahamaksu</Label>
+                <Value>Ennakonpidätykseen sisältyy päivärahamaksua.</Value>
+            </Permanent>
+            <Permanent>
+                <Label>Päivärahamaksu</Label>
+                <Value>Ennakonpidätys sisältää sairausvakuutuksen päivärahamaksua 0,78% ennakonpidätyksen alaisesta tulosta eli yhteensä 2,41e.</Value>
+            </Permanent>
+            <!-- TRANSIENT VIESTIT OVAT VÄLIAIKAISIA PALKKALASKELMAKOHTAISIA VIESTEJÄ JA NE NÄYTETÄÄN LASKELMIEN ALAPUOLELLA PÄÄOSIOSSA. Otsikkona Messages/Heading -->
+            <Transient>
+                <Label>Lisätietoja</Label>
+                <Value>Hei Juha, Muista liittyä liittoon hyvissä ajoin.</Value>
+            </Transient>
+            <Transient>
+                <Label>Lisätietoja2</Label>
+                <Value>Hyvää joulua</Value>
+            </Transient>
+        </Messages>
+    </Payslip>
+</Payslips>
