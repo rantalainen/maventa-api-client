@@ -570,15 +570,17 @@ export class MaventaPayslipReceiverServiceClient {
     /** Filename including file extension */
     fileName: string,
     /** Payslip XML file as buffer - Payslips XML element can contain multiple payslip elements */
-    file: Buffer
+    file: Buffer,
+    /** Payslip file version */
+    version: '1.1' | '2.0'
   ): Promise<IPayslipBatchId> {
     try {
       const soapClient = await this.createSoapClient();
 
       /** SubmitPayslips */
-      soapClient.addSoapHeader({ 'tns:PayslipVersion': '2.0' });
+      soapClient.addSoapHeader({ 'tns:PayslipVersion': version });
       soapClient.addSoapHeader({ 'tns:OriginalFileName': fileName });
-      soapClient.addSoapHeader({ 'tns:Convert': false });
+      soapClient.addSoapHeader({ 'tns:Convert': version === '1.1' });
 
       // Initialize JSZip
       const zip = new JSZip();
