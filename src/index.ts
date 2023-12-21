@@ -567,10 +567,12 @@ export class MaventaPayslipReceiverServiceClient {
   }
 
   async submitPayslips(
-    /** Filename including file extension */
-    fileName: string,
-    /** Payslip XML file as buffer - Payslips XML element can contain multiple payslip elements */
-    file: Buffer,
+    /** Array of payslip XML files
+     * @filename property including file extension
+     * @fileBuffer only one XML payslip per file */
+    files: { fileName: string; fileBuffer: Buffer }[],
+    /** Used for logging purposes in Maventa */
+    batchName: string,
     /** Payslip file version */
     version: '1.1' | '2.0'
   ): Promise<IPayslipBatchId> {
@@ -579,14 +581,19 @@ export class MaventaPayslipReceiverServiceClient {
 
       /** SubmitPayslips */
       soapClient.addSoapHeader({ 'tns:PayslipVersion': version });
-      soapClient.addSoapHeader({ 'tns:OriginalFileName': fileName });
+      soapClient.addSoapHeader({ 'tns:OriginalFileName': batchName });
       soapClient.addSoapHeader({ 'tns:Convert': version === '1.1' });
 
       // Initialize JSZip
       const zip = new JSZip();
 
-      // Add payslip XML file to ZIP file
-      zip.file(fileName, file);
+      for (const file of files) {
+        // Parse folder name from file name
+        const folderName = file.fileName.split('.')[0];
+
+        // Add payslip XML file to subfolder in ZIP file
+        zip.file(`${folderName}/${file.fileName}`, file.fileBuffer);
+      }
 
       // Generate ZIP file
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
