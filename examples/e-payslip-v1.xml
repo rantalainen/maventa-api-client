@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml-stylesheet href="PayslipMepco.xsl" type="text/xsl" ?>
+<Payslip xsi:noNamespaceSchemaLocation="Payslip_1.1.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <HeaderData>
+  <PersonID>DDMMYY-XXXX</PersonID>
+  <PayDate>20231124</PayDate>
+  <NetPayment>0,32</NetPayment>
+  <Payer>Malliyritys</Payer>
+  <PayslipOnPaper>E</PayslipOnPaper>
+  <StylesheetID>PayslipMepco.xsl</StylesheetID>
+  <LangCode>1</LangCode>
+  <BusinessID>0362167-0</BusinessID>
+  <ReceivingBank>
+   <BankCode>162435</BankCode>
+  </ReceivingBank>
+ </HeaderData>
+ <ControlData>
+  <Heading />
+  <Company>
+   <BusinessID>0362167-0</BusinessID>
+   <Name>Malliyritys</Name>
+  </Company>
+  <Language>
+   <LanguageID>1</LanguageID>
+   <Name />
+  </Language>
+  <Title>
+   <Heading>PALKKALASKELMA/PALKKATODISTUS</Heading>
+   <Value />
+  </Title>
+ </ControlData>
+ <PayPeriod>
+  <Heading />
+  <DateOfPayment>
+   <Label>Maksupäivä</Label>
+   <Date>24.11.2023</Date>
+  </DateOfPayment>
+  <Period>
+   <Label />
+   <PeriodCode>1/2023</PeriodCode>
+  </Period>
+  <PeriodDates>
+   <Label>Palkkakausi</Label>
+   <StartDate>
+    <Label>2023/1</Label>
+    <Date>1.11.2023</Date>
+   </StartDate>
+   <TermDate>
+    <Label>-</Label>
+    <Date>30.11.2023</Date>
+   </TermDate>
+  </PeriodDates>
+  <PeriodDates>
+   <Label>Tehtävä</Label>
+   <StartDate>
+    <Label />
+    <Date>
+    </Date>
+   </StartDate>
+  </PeriodDates>
+  <PeriodDates>
+   <Label>Työs. alkupvm</Label>
+   <StartDate>
+    <Label />
+    <Date>1.9.2023</Date>
+   </StartDate>
+   <TermDate>
+    <Label />
+    <Date>
+    </Date>
+   </TermDate>
+  </PeriodDates>
+  <PeriodDates>
+   <Label>Tekn. ts. alkupvm</Label>
+   <StartDate>
+    <Label />
+    <Date>
+    </Date>
+   </StartDate>
+  </PeriodDates>
+ </PayPeriod>
+ <Delivery>
+  <Heading />
+  <Sender>
+   <Heading />
+   <PostalAddress>
+    <PersonLine>Malliyritys</PersonLine>
+    <PersonLine>
+    </PersonLine>
+    <AddressLine>
+    </AddressLine>
+    <PostalCode> </PostalCode>
+   </PostalAddress>
+  </Sender>
+  <Recipient>
+   <Heading />
+   <PostalAddress>
+    <PersonLine>Matti Meikäläinen</PersonLine>
+    <AddressLine>
+    </AddressLine>
+    <PostalCode>
+    </PostalCode>
+    <Country>
+    </Country>
+   </PostalAddress>
+  </Recipient>
+  <Postage>
+   <Heading />
+   <Category>
+    <Label>kirjeluokka</Label>
+    <Value>1</Value>
+   </Category>
+   <Contract>
+    <Label>maakoodi</Label>
+    <Value>FI</Value>
+   </Contract>
+  </Postage>
+ </Delivery>
+ <Employee>
+  <Heading>Henkilötunnus</Heading>
+  <Identity>
+   <Label />
+   <PersonID>DDMMYY-XXXX</PersonID>
+  </Identity>
+  <PersonNumber>
+   <Label>Henkilönro</Label>
+   <Value>6</Value>
+  </PersonNumber>
+  <PersonName>Matti Meikäläinen</PersonName>
+  <EmploymentDate>
+   <Label />
+   <Value />
+  </EmploymentDate>
+  <SalaryCategory>
+   <Label />
+   <Value />
+  </SalaryCategory>
+  <SalaryCategory>
+   <Label />
+   <Value />
+  </SalaryCategory>
+ </Employee>
+ <Classification>
+  <Heading>Tehtävä</Heading>
+  <JobTitle>
+   <Label />
+   <Value>
+   </Value>
+  </JobTitle>
+  <DeptCode>
+   <Label />
+   <Value />
+  </DeptCode>
+  <CostFollowUp>
+   <Label />
+   <Value />
+  </CostFollowUp>
+ </Classification>
+ <BankAccount>
+  <Heading>Pankkitili</Heading>
+  <AccountCode>
+   <Label />
+   <Value>FIXXXX</Value>
+  </AccountCode>
+  <AccountCode>
+   <Label />
+   <Value>  FIXXXX</Value>
+  </AccountCode>
+ </BankAccount>
+ <CalculationBases>
+  <Heading>Palkkaus-</Heading>
+  <Heading>tiedot</Heading>
+  <SalaryRates>
+   <Heading />
+   <Record>
+    <Label>
+    </Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>
+    </Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Kuukausipalkka</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Henkilök. palkanos</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Tehtäväk. palkanos</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Yritysk. palkanos</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Palvelusvuosilisä</Label>
+    <Value>
+    </Value>
+   </Record>
+  </SalaryRates>
+  <SalaryRates>
+   <Heading />
+   <Record>
+    <Label>
+    </Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Tuntipalkka</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Työk. palkanos</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Henkilök. erillisli</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>PHT-lisä</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>KLT-lisä</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>
+    </Label>
+    <Value>
+    </Value>
+   </Record>
+  </SalaryRates>
+  <TaxationRates>
+   <Heading>Verotustiedot</Heading>
+   <Record>
+    <Label>Prosenttikortti</Label>
+    <Value />
+   </Record>
+   <Record>
+    <Label>Prosentti1 60,0%  </Label>
+    <Value />
+   </Record>
+   <Record>
+    <Label>
+    </Label>
+    <Value />
+   </Record>
+   <Record>
+    <Label>
+    </Label>
+    <Value />
+   </Record>
+   <Record>
+    <Label>
+    </Label>
+    <Value />
+   </Record>
+  </TaxationRates>
+  <VacationRecords>
+   <Heading />
+   <Record>
+    <Label>Lomapäivät 2022</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Lomapäivät 2023</Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>Lomapäivät 2024</Label>
+    <Value>8,00</Value>
+   </Record>
+   <Record>
+    <Label>
+    </Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>
+    </Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>
+    </Label>
+    <Value>
+    </Value>
+   </Record>
+   <Record>
+    <Label>
+    </Label>
+    <Value>
+    </Value>
+   </Record>
+  </VacationRecords>
+ </CalculationBases>
+ <PayDetails>
+  <Heading />
+  <DetailList>
+   <HeadingLine>
+    <Heading>Erittelyt</Heading>
+    <Heading>Yksiköt/määrä</Heading>
+    <Heading>A-hinta</Heading>
+    <Heading />
+    <Heading />
+    <Heading>Yhteensä</Heading>
+   </HeadingLine>
+   <DetailLine>
+    <PayCode>10000</PayCode>
+    <Description>10000 Kuukausipalkka</Description>
+    <Hours>
+    </Hours>
+    <HourlyRate>1,00</HourlyRate>
+    <Units>
+    </Units>
+    <UnitRate>
+    </UnitRate>
+    <Amount>1,00</Amount>
+   </DetailLine>
+   <DetailLine>
+    <PayCode>90000</PayCode>
+    <Description>90000 Ennakonpidätys</Description>
+    <Hours>30,33</Hours>
+    <HourlyRate>
+    </HourlyRate>
+    <Units>1,00</Units>
+    <UnitRate>
+    </UnitRate>
+    <Amount>-0,60</Amount>
+   </DetailLine>
+   <DetailLine>
+    <PayCode>90100</PayCode>
+    <Description>90100 Työeläkemaksu TyEL</Description>
+    <Hours>
+    </Hours>
+    <HourlyRate>1,00</HourlyRate>
+    <Units>6,35</Units>
+    <UnitRate>
+    </UnitRate>
+    <Amount>-0,06</Amount>
+   </DetailLine>
+   <DetailLine>
+    <PayCode>90200</PayCode>
+    <Description>90200 Työttömyysvakuutusmaksu</Description>
+    <Hours>
+    </Hours>
+    <HourlyRate>1,00</HourlyRate>
+    <Units>1,90</Units>
+    <UnitRate>
+    </UnitRate>
+    <Amount>-0,02</Amount>
+   </DetailLine>
+  </DetailList>
+ </PayDetails>
+ <EarningsToDate>
+  <Heading>Kertymä palkkakaudelta</Heading>
+  <Set>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Ennakonpid. al. tul</Label>
+     <Value>1,00</Value>
+    </Cell>
+    <Cell>
+     <Label>Luontoisedut</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Rahapalkka</Label>
+     <Value>1,00</Value>
+    </Cell>
+    <Cell>
+     <Label>Ennakonpidätys</Label>
+     <Value>-0,60</Value>
+    </Cell>
+   </Line>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Svpvr-maksu</Label>
+     <Value>0,02</Value>
+    </Cell>
+    <Cell>
+     <Label>Vähennykset</Label>
+     <Value>-0,08</Value>
+    </Cell>
+    <Cell>
+     <Label>Lomarahat</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Vuosilomakorvaus</Label>
+     <Value>
+     </Value>
+    </Cell>
+   </Line>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Verottomat korv.</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Ay-jäsenmaksut</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Työeläkemaksut</Label>
+     <Value>-0,06</Value>
+    </Cell>
+    <Cell>
+     <Label>Tyött.vak.maksut</Label>
+     <Value>-0,02</Value>
+    </Cell>
+   </Line>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Maksetaan</Label>
+     <Value>0,32</Value>
+    </Cell>
+   </Line>
+  </Set>
+ </EarningsToDate>
+ <EarningsToDate>
+  <Heading>Kertymä vuoden alusta</Heading>
+  <Set>
+   <SetHeading>
+    <Heading />
+   </SetHeading>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Ennakonpid. al. tul</Label>
+     <Value>1,00</Value>
+    </Cell>
+    <Cell>
+     <Label>Luontoisedut</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Rahapalkka</Label>
+     <Value>1,00</Value>
+    </Cell>
+   </Line>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Ennakonpidätys</Label>
+     <Value>-0,60</Value>
+    </Cell>
+    <Cell>
+     <Label>Svpvr-maksu</Label>
+     <Value>0,02</Value>
+    </Cell>
+    <Cell>
+     <Label>Vähennykset</Label>
+     <Value>-0,08</Value>
+    </Cell>
+   </Line>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Lomarahat</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Vuosilomakorvaus</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Verottomat korv.</Label>
+     <Value>
+     </Value>
+    </Cell>
+   </Line>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Ay-jäsenmaksut</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Työeläkemaksut</Label>
+     <Value>-0,06</Value>
+    </Cell>
+    <Cell>
+     <Label>Tyött.vak.maksut</Label>
+     <Value>-0,02</Value>
+    </Cell>
+   </Line>
+  </Set>
+ </EarningsToDate>
+ <EarningsToDate>
+  <Heading>Kertymä edelliseltä vuodelta</Heading>
+  <Set>
+   <SetHeading>
+    <Heading />
+   </SetHeading>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Ennakonpid.al. tulo</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Luontoisedut</Label>
+     <Value>
+     </Value>
+    </Cell>
+   </Line>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Rahapalkka</Label>
+     <Value>
+     </Value>
+    </Cell>
+    <Cell>
+     <Label>Ennakonpidätys</Label>
+     <Value>
+     </Value>
+    </Cell>
+   </Line>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Verottomat korv.</Label>
+     <Value>
+     </Value>
+    </Cell>
+   </Line>
+   <Line>
+    <LineHeading />
+    <Cell>
+     <Label>Vähennykset</Label>
+     <Value>
+     </Value>
+    </Cell>
+   </Line>
+  </Set>
+ </EarningsToDate>
+ <Messages>
+  <Heading />
+  <Permanent>
+   <Label />
+   <Value />
+  </Permanent>
+  <Transient>
+   <Label />
+   <Value>
+   </Value>
+   <Value>
+   </Value>
+   <Value>
+   </Value>
+  </Transient>
+ </Messages>
+</Payslip>

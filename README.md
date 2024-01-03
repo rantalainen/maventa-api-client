@@ -47,6 +47,54 @@ Available methods can be found in [Maventa Swagger](https://swagger.maventa.com/
 const companies = await maventa.api.companies.getV1Companies();
 ```
 
+## E-Payslip API
+
+E-Payslip API is used to send out payslips to e-banking.
+
+### Setup client
+
+In order to obtain user and password, please contact Maventa Integration Support.
+
+```javascript
+const maventaPayslipReciever = new MaventaPayslipReceiverServiceClient({
+  // Required options:
+  user: 'username',
+  password: '****'
+});
+```
+
+### maventaPayslipReciever.getContractActiveCustomerVatIdentifiers()
+
+Fetches active companies/contracts connected to API user. Each organization needs to be active before sending e-payslips to employees.
+
+### maventaPayslipReciever.activateCustomerPayrollContract()
+
+Activates new organization to API user, required for sending e-payslips.
+
+### maventaPayslipReciever.submitPayslips(): Promise\<IPayslipBatchId\>
+
+Submits payslip data to API as a batch. Batch can contain one or more payslips.
+
+**required parameters**:
+
+- `files` Array of payslip XML files { fileName: string; fileBuffer: Buffer }[]
+  - `fileName` unique from other files in batch
+  - `fileBuffer` one payslip xml data buffer per file
+- `batchName` Used for logging purposes
+- `version` Payslip file version: 1.1 or 2.0
+
+```javascript
+// Send one payslip as batch to API
+const fileBuffer = fs.readFileSync('payslip-example.xml');
+const files = [{ fileName: 'payslip-example.xml', fileBuffer }];
+const batchId = await maventaPayslipReciever.submitPayslips(files, 'payslip-example.xml', '1.1');
+console.log(batchId);
+```
+
+### maventaPayslipReciever.getPayslipProcessingStatusAck(): Promise\<IPayslipProcessingStatusAck\>
+
+Fetch status from submitted payslips.
+
 ## Payslip API
 
 Maventa Direct Print (also known as Payslip) is a service that enables sending of EPL and PDF files as letters through the printing service in Finland.
