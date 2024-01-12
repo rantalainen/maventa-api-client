@@ -132,7 +132,7 @@ export class MaventaApiClient {
       accessToken = {
         ...response.data,
         // Reset access token when it expires
-        timeout: setTimeout(() => maventa.resetAccessToken(scope), response.data.expires_in * 1000)
+        timeout: setTimeout(() => maventa.resetAccessToken(scope), response.data.expires_in * 1000 - 300000)
       };
       maventa.accessTokens[scope] = accessToken;
     }
