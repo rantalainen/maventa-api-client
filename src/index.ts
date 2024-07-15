@@ -433,10 +433,11 @@ export class MaventaBillingApiClient {
 
   private installErrorHandler() {
     this.api.instance.interceptors.response.use(
-      (response) => response,
-      (error) => {
+      (response: any) => response,
+      (error: any) => {
         error.message =
-          `Maventa Billing HTTP error ${error.response.status} (${error.response.statusText}): ` + JSON.stringify(error.response.data);
+          `Maventa Billing HTTP error "${error?.message}", ${error.response?.status} (${error.response?.statusText}): ` +
+          JSON.stringify(error.response?.data);
         throw error;
       }
     );
