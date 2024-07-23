@@ -213,7 +213,7 @@ class MaventaApiClientInstance extends Api<any> {
      */
     postInvoiceZip: async (
       invoiceXml: Buffer,
-      invoicePdf: Buffer,
+      invoicePdf?: Buffer,
       attachments: AttachmentFile[] = [],
       options: object = {},
       params: RequestParams = {}
@@ -224,14 +224,16 @@ class MaventaApiClientInstance extends Api<any> {
       // Add invoice XML file to ZIP file
       zip.file('invoice.xml', invoiceXml);
 
-      // Add invoice PDF file to ZIP file
-      zip.file('invoice.pdf', invoicePdf);
+      if (invoicePdf) {
+        // Add invoice PDF file to ZIP file
+        zip.file('invoice.pdf', invoicePdf);
+      }
 
       if (attachments.length) {
         // Add attachments to ZIP file
-        for (const attachment of attachments) {
-          zip.file(attachment.fileName, attachment.content);
-        }
+        attachments.forEach((attachment, i) => {
+          zip.file(`${i+1}_${attachment.fileName}`, attachment.content);
+        });
       }
 
       // Generate ZIP file
