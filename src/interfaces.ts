@@ -152,3 +152,8 @@ export interface IContractActiveCustomerVatIdentifiers {
 export interface IDeactivatePayrollContract {
   DeactivationSucceed: 'true' | 'false';
 }
+
+export interface AttachmentFile {
+  fileName: string;
+  content: Buffer;
+}

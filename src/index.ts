@@ -5,6 +5,7 @@ import { AxiosRequestConfig } from 'axios';
 import axios from 'axios';
 import { HttpsAgent } from 'agentkeepalive';
 import {
+  AttachmentFile,
   IMaventaApiClientAccessToken,
   IMaventaApiClientConfig,
   IMaventaApiClientOptions,
@@ -210,7 +211,13 @@ class MaventaApiClientInstance extends Api<any> {
      * @secure
      * @response `201` `InvoicesHttpApiEntitiesInvoice` Upload new invoice
      */
-    postInvoiceZip: async (invoiceXml: Buffer, invoicePdf: Buffer, options: object = {}, params: RequestParams = {}) => {
+    postInvoiceZip: async (
+      invoiceXml: Buffer,
+      invoicePdf: Buffer,
+      attachments: AttachmentFile[] = [],
+      options: object = {},
+      params: RequestParams = {}
+    ) => {
       // Initialize JSZip
       const zip = new JSZip();
 
@@ -219,6 +226,13 @@ class MaventaApiClientInstance extends Api<any> {
 
       // Add invoice PDF file to ZIP file
       zip.file('invoice.pdf', invoicePdf);
+
+      if (attachments.length) {
+        // Add attachments to ZIP file
+        for (const attachment of attachments) {
+          zip.file(attachment.fileName, attachment.content);
+        }
+      }
 
       // Generate ZIP file
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
